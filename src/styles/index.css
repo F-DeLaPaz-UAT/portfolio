@@ -1,0 +1,6 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* globals you actually care about */
+:root { color-scheme: light dark; }
