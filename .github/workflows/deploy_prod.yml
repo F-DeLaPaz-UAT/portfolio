@@ -1,0 +1,48 @@
+name: Deploy Prod (main → gh-pages)
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Build (prod base = /portfolio/)
+        run: npm run build
+        env:
+          NODE_ENV: production
+          # Don't set BASE_PATH here → vite uses "/portfolio/" for prod
+
+      # Optional: if your package.json still has postbuild, this is redundant
+      # - name: Copy 404
+      #   run: node scripts/copy404.js
+
+      - name: Deploy to gh-pages root (keep previews)
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          keep_files: true
+          enable_jekyll: false
