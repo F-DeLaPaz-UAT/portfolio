@@ -15,6 +15,7 @@ export default function SIPLayout() {
     { to: "overview",  label: "Overview" },
     { to: "visuals",   label: "Visuals & Docs" },
     { to: "prior-art", label: "Prior Art" },
+	{ to: "eval",      label: "Eval & Goals" },
     { to: "brief",     label: "SIP Brief" }
   ];
 
