@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lumber Cut Optimizer (Final)</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; max-width: 1000px; }
+    h1, h2 { margin-bottom: 0.5em; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 1em; }
+    th, td { border: 1px solid #aaa; padding: 6px; text-align: left; }
+    th { background: #eee; }
+    input { width: 90%; padding: 4px; }
+    button { margin: 10px 4px; padding: 6px 12px; }
+    .output { margin-top: 2em; }
+  </style>
+</head>
+<body>
+
+<h1>Lumber Cut Optimizer (Final Build)</h1>
+<p>Enter your Cut List and Available Stock. Optimize will open results in a new printable window.</p>
+
+<h2>1. Cuts Needed</h2>
+<table id="cutsTable">
+  <thead>
+    <tr><th>Qty</th><th>Length (inches)</th><th>Width (example: 2x4)</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><input type="number" placeholder="e.g. 14" min="1"></td>
+      <td><input type="number" placeholder="e.g. 24" min="1"></td>
+      <td><input type="text" placeholder="e.g. 2x4"></td>
+    </tr>
+  </tbody>
+</table>
+<button onclick="addCutRow()">+ Add Cut</button>
+<button onclick="clearCutRows()">Clear Cuts</button>
+
+<h2>2. Available Stock</h2>
+<table id="stockTable">
+  <thead>
+    <tr><th>Width (example: 2x4)</th><th>Length (inches)</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><input type="text" placeholder="e.g. 2x4"></td>
+      <td><input type="number" placeholder="e.g. 96" min="1"></td>
+    </tr>
+  </tbody>
+</table>
+<button onclick="addStockRow()">+ Add Stock</button>
+<button onclick="clearStockRows()">Clear Stock</button>
+
+<br><br>
+<button onclick="optimize()">Optimize</button>
+
+<script>
+function addCutRow() {
+  const tbody = document.querySelector('#cutsTable tbody');
+  const row = tbody.insertRow();
+  row.innerHTML = '<td><input type="number" min="1"></td>'
+                + '<td><input type="number" min="1"></td>'
+                + '<td><input type="text"></td>';
+}
+
+function clearCutRows() {
+  const tbody = document.querySelector('#cutsTable tbody');
+  tbody.innerHTML = '<tr><td><input type="number" placeholder="e.g. 14" min="1"></td>'
+                  + '<td><input type="number" placeholder="e.g. 24" min="1"></td>'
+                  + '<td><input type="text" placeholder="e.g. 2x4"></td></tr>';
+}
+
+function addStockRow() {
+  const tbody = document.querySelector('#stockTable tbody');
+  const row = tbody.insertRow();
+  row.innerHTML = '<td><input type="text"></td>'
+                + '<td><input type="number" min="1"></td>';
+}
+
+function clearStockRows() {
+  const tbody = document.querySelector('#stockTable tbody');
+  tbody.innerHTML = '<tr><td><input type="text" placeholder="e.g. 2x4"></td>'
+                  + '<td><input type="number" placeholder="e.g. 96" min="1"></td></tr>';
+}
+
+function optimize() {
+  const kerf = 0.125;
+  const cuts = [];
+  const stock = [];
+  document.querySelectorAll('#cutsTable tbody tr').forEach(tr => {
+    const qty = parseInt(tr.cells[0].firstElementChild.value);
+    const len = parseFloat(tr.cells[1].firstElementChild.value);
+    const wid = tr.cells[2].firstElementChild.value.trim();
+    if (qty > 0 && len > 0 && wid) {
+      for (let i = 0; i < qty; i++) cuts.push({wid,len});
+    }
+  });
+  document.querySelectorAll('#stockTable tbody tr').forEach(tr => {
+    const wid = tr.cells[0].firstElementChild.value.trim();
+    const len = parseFloat(tr.cells[1].firstElementChild.value);
+    if (wid && len > 0) stock.push({wid,len});
+  });
+
+  if (cuts.length === 0 || stock.length === 0) {
+    alert("Please enter both cuts and stock before optimizing.");
+    return;
+  }
+
+  // Group cuts by width
+  const groups = {};
+  cuts.forEach(c => {
+    if (!groups[c.wid]) groups[c.wid] = [];
+    groups[c.wid].push(c.len);
+  });
+
+  const bom = {}, assignments = [];
+
+  for (const width in groups) {
+    const cutList = groups[width].sort((a,b)=>b-a);
+    const stockList = stock.filter(b=>b.wid === width).sort((a,b)=>a.len-b.len);
+    if (stockList.length === 0) {
+      alert(`No stock available for width ${width}!`);
+      return;
+    }
+    while (cutList.length > 0) {
+      const needed = cutList[0];
+      let selectedStock = null;
+      for (const b of stockList) {
+        if (b.len >= needed) {
+          selectedStock = {...b};
+          break;
+        }
+      }
+      if (!selectedStock) {
+        alert(`No available board long enough for cut ${needed}" in width ${width}.`);
+        return;
+      }
+
+      let spaceLeft = selectedStock.len;
+      const cutsMade = [];
+      while (cutList.length > 0) {
+        const cut = cutList[0];
+        if (cut + (cutsMade.length > 0 ? kerf : 0) <= spaceLeft) {
+          cutsMade.push(cut);
+          spaceLeft -= (cut + kerf);
+          cutList.shift();
+        } else {
+          break;
+        }
+      }
+
+      const boardLabel = `${selectedStock.wid} × ${selectedStock.len}"`;
+      bom[boardLabel] = (bom[boardLabel]||0)+1;
+      assignments.push({ board: boardLabel, cuts: cutsMade, waste: spaceLeft.toFixed(2) });
+    }
+  }
+
+  const printWindow = window.open("", "_blank");
+  printWindow.document.write(`
+    <html><head><title>Optimized Cut Plan</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+      th, td { border: 1px solid #aaa; padding: 6px; }
+      th { background: #eee; }
+      button { margin-bottom: 20px; }
+    </style>
+    </head><body>
+    <h1>Optimized Cut Plan</h1>
+    <button onclick="window.print()">Print This Page</button>
+    <h2>BOM (Boards to Buy)</h2>
+    <table><tr><th>Board</th><th>Quantity</th></tr>
+  `);
+  for (const b in bom) {
+    printWindow.document.write(`<tr><td>${b}</td><td>${bom[b]}</td></tr>`);
+  }
+  printWindow.document.write(`</table><h2>Cut Assignments</h2><table><tr><th>Board</th><th>Cuts</th><th>Waste (inches)</th></tr>`);
+  assignments.forEach(a => {
+    printWindow.document.write(`<tr><td>${a.board}</td><td>${a.cuts.join(', ')}</td><td>${a.waste}</td></tr>`);
+  });
+  printWindow.document.write(`</table></body></html>`);
+  printWindow.document.close();
+}
+</script>
+
+</body>
+</html>
