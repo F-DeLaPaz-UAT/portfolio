@@ -15,6 +15,7 @@ import SIPLayout from "./pages/SIPLayout";
 import SIPOverview from "./pages/SIPOverview";
 import SIPVisuals from "./pages/SIPVisuals";
 import SIPPriorArt from "./pages/SIPPriorArt";
+import SIPEvalGoals from "./pages/SIPEvalGoals";
 
 // SIP Brief (nested tabs)
 import SIPBriefLayout from "./pages/brief/SIPBriefLayout";
@@ -46,6 +47,8 @@ export default function App() {
             <Route path="overview" element={<SIPOverview />} />
             <Route path="visuals" element={<SIPVisuals />} />
             <Route path="prior-art" element={<SIPPriorArt />} />
+			<Route path="/sip/eval" element={<SIPEvalGoals/>} />
+
 
             {/* SIP Brief nested tabs */}
             <Route path="brief" element={<SIPBriefLayout />}>
