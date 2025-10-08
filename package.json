@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "postbuild": "powershell -Command \"Copy-Item -Path dist/index.html -Destination dist/404.html\"",
+    "postbuild": "node scripts/copy404.js",
     "predeploy": "vite build",
     "deploy": "gh-pages -d dist",
     "preview": "vite preview"
