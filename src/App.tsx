@@ -27,6 +27,8 @@ import SIPBriefProject from "./pages/brief/SIPBriefProject";
 import SIPBriefInnovation from "./pages/brief/SIPBriefInnovation";
 import SIPBriefScenarios from "./pages/brief/SIPBriefScenarios";
 import SIPBriefPDF from "./pages/brief/SIPBriefPDF";
+import SIPBriefEvalGoals from "./pages/brief/SIPBriefEvalGoals";
+
 
 export default function App() {
   return (
@@ -60,6 +62,7 @@ export default function App() {
               <Route path="project" element={<SIPBriefProject />} />
               <Route path="innovation" element={<SIPBriefInnovation />} />
               <Route path="scenarios" element={<SIPBriefScenarios />} />
+			  <Route path="eval-goals" element={<SIPBriefEvalGoals />} />
               <Route path="pdf" element={<SIPBriefPDF />} />
             </Route>
           </Route>

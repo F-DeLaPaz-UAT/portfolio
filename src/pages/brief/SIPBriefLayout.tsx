@@ -18,6 +18,7 @@ export default function SIPBriefLayout() {
     { to: "project",     label: "Project Description" },
     { to: "innovation",  label: "Innovation Claim" },
     { to: "scenarios",   label: "Usage Scenarios" },
+    { to: "eval-goals", label: "Eval & Goals" },
     { to: "pdf",         label: "Brief PDF" }
   ];
 
