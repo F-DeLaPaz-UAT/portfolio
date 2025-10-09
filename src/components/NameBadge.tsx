@@ -13,15 +13,15 @@ type Props = {
 function CircleImg({
   src,
   alt,
-  min = 72,     // shrink sooner on small screens
-  max = 160,
+  min = 72,
+  max = 148,
 }: {
   src: string;
   alt?: string;
   min?: number;
   max?: number;
 }) {
-  const dim = `clamp(${min}px, 14vw, ${max}px)`; // gentler scaling
+  const dim = `clamp(${min}px, 13vw, ${max}px)`;
   return (
     <img
       src={`${base}${src}`}
@@ -39,20 +39,20 @@ export default function NameBadge({
   left,
   right,
   min = 72,
-  max = 160,
+  max = 148,
 }: Props) {
   return (
     <div className="flex items-center gap-3 sm:gap-6 flex-nowrap min-w-0 [container-type:inline-size]">
       {/* Left portrait */}
       <CircleImg src={left} alt={name} min={min} max={max} />
 
-      {/* Center stack: wraps and scales with available width */}
+      {/* Center stack: wraps on small screens, single line on xl+ */}
       <div className="flex-1 min-w-0 px-2 text-center overflow-visible [container-type:inline-size]">
         <div
-          className="font-extrabold leading-tight whitespace-normal break-words"
-          // container-query units keep size proportional to the available inline size
-          // fallback (if container queries are unsupported) is the first/last clamp bounds
-          style={{ fontSize: "clamp(0.9rem, 7cqi, 2.25rem)" }}
+          className="font-extrabold leading-tight whitespace-normal xl:whitespace-nowrap break-words"
+          // Container-query units let this scale with available width.
+          // Max size trimmed so it fits on one line at desktop.
+          style={{ fontSize: "clamp(1rem, 6cqi, 2rem)" }}
         >
           {name.replaceAll("De La Paz", "De\u00A0La\u00A0Paz")}
         </div>
@@ -67,7 +67,7 @@ export default function NameBadge({
         )}
       </div>
 
-      {/* Right logo: hide on very narrow screens to guarantee no overlap */}
+      {/* Right logo — hide on very narrow screens to avoid crowding */}
       <div className="max-[600px]:hidden">
         <CircleImg src={right} alt="" min={min} max={max} />
       </div>
