@@ -8,14 +8,16 @@ const base = "block px-3 py-2 rounded-md text-sm whitespace-nowrap";
 const active = "bg-neutral-800 text-white";
 const idle = "text-neutral-300 hover:text-white hover:bg-neutral-800";
 
+type Tab = { to: string; label: string; badge?: "NEW" | "Updated" };
+
 export default function SIPLayout() {
   useTitle(`SIP: ${branding.productShort}`);
 
-  const tabs = [
+  const tabs: Tab[] = [
     { to: "overview",  label: "Overview" },
     { to: "visuals",   label: "Visuals & Docs" },
     { to: "prior-art", label: "Prior Art" },
-	{ to: "eval",      label: "Eval & Goals" },
+	{ to: "eval",      label: "Eval & Goals", badge: "NEW" },
     { to: "brief",     label: "SIP Brief" }
   ];
 
@@ -31,6 +33,12 @@ export default function SIPLayout() {
                 className={({ isActive }) => `${base} ${isActive ? active : idle}`}
               >
                 {t.label}
+				<span>{t.label}</span>
+				{t.badge && ( 
+				  <span className="ml-2 text-[10px] uppercase tracking-wide opacity-80">
+				  ({t.badge})
+				  </span>
+				)}
               </NavLink>
             ))}
           </nav>

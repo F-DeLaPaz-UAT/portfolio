@@ -10,7 +10,8 @@ const railIdle = "text-neutral-300 hover:text-white hover:bg-neutral-800";
 const asset = (p: string) => `${import.meta.env.BASE_URL}assets/sip/${p}`;
 
 export default function SIPBriefLayout() {
-  const tabs = [
+	type Tab = { to: string; label: string; badge?: "NEW" | "Updated" };
+	const tabs: Tab[] = [
     { to: "title",       label: "Title & Overview" },
     { to: "field",       label: "Technical Field" },
     { to: "background",  label: "Background" },
@@ -18,25 +19,31 @@ export default function SIPBriefLayout() {
     { to: "project",     label: "Project Description" },
     { to: "innovation",  label: "Innovation Claim" },
     { to: "scenarios",   label: "Usage Scenarios" },
-    { to: "eval-goals", label: "Eval & Goals" },
-    { to: "pdf",         label: "Brief PDF" }
-  ];
+	{ to: "eval-goals", label: "Eval & Goals", badge: "NEW" },
+	{ to: "pdf",        label: "Brief PDF",    badge: "Updated" },
+   ];
 
   return (
     <div className="grid gap-6 md:grid-cols-[220px,1fr]">
       <aside className="md:sticky md:top-4 h-fit">
         <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible pr-2">
           {tabs.map(t => (
-            <NavLink
-              key={t.to}
-              to={t.to}
-              className={({ isActive }) =>
-                `${railLink} ${isActive ? railActive : railIdle}`
-              }
-            >
-              {t.label}
-            </NavLink>
-          ))}
+		<NavLink
+		 key={t.to}
+		 to={t.to}
+		 className={({ isActive }) =>
+			`${railLink} ${isActive ? railActive : railIdle}`
+		 }
+		>
+		 <span>{t.label}</span>
+		 {t.badge && (
+		 <span className="ml-2 text-[10px] uppercase tracking-wide opacity-80">
+         ({t.badge})
+		</span>
+    )}
+  </NavLink>
+))}
+
         </nav>
       </aside>
 
