@@ -18,7 +18,7 @@ export default function SIPLayout() {
     { to: "visuals",   label: "Visuals & Docs" },
     { to: "prior-art", label: "Prior Art" },
 	{ to: "eval",      label: "Eval & Goals", badge: "NEW" },
-    { to: "brief",     label: "SIP Brief" }
+	{ to: "brief",     label: "SIP Brief", badge: "Updated" },
   ];
 
   return (
@@ -27,20 +27,20 @@ export default function SIPLayout() {
         <aside className="md:sticky md:top-4 h-fit">
           <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible pr-2">
             {tabs.map(t => (
-              <NavLink
-                key={t.to}
-                to={t.to}
-                className={({ isActive }) => `${base} ${isActive ? active : idle}`}
-              >
-                {t.label}
-				<span>{t.label}</span>
-				{t.badge && ( 
-				  <span className="ml-2 text-[10px] uppercase tracking-wide opacity-80">
-				  ({t.badge})
-				  </span>
-				)}
-              </NavLink>
-            ))}
+				<NavLink
+				 key={t.to}
+				 to={t.to}
+				 className={({ isActive }) => `${base} ${isActive ? active : idle}`}
+			>
+			 <span>{t.label}</span>
+			 {t.badge && (
+			 <span className="ml-2 text-[10px] uppercase tracking-wide opacity-80">
+			 ({t.badge})
+			 </span>
+			)}
+		</NavLink>
+	))}
+
           </nav>
         </aside>
         <main className="min-w-0">
