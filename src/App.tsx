@@ -45,7 +45,7 @@ export default function App() {
 
           {/* SIP layout with sticky rail */}
           <Route path="/sip" element={<SIPLayout />}>
-            <Route index element={<Navigate to="eval" replace />} />
+			<Route index element={<Navigate to="overview" replace />} />
             <Route path="overview" element={<SIPOverview />} />
             <Route path="visuals" element={<SIPVisuals />} />
             <Route path="prior-art" element={<SIPPriorArt />} />
