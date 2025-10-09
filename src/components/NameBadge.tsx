@@ -13,7 +13,7 @@ type Props = {
 function CircleImg({
   src,
   alt,
-  min = 88,
+  min = 72,
   max = 160
 }: {
   src: string;
@@ -21,8 +21,8 @@ function CircleImg({
   min?: number;
   max?: number;
 }) {
-  const dim = `clamp(${min}px, 16vw, ${max}px)`;
-  return (
+	const dim = `clamp(${min}px, 14vw, ${max}px)`;
+	return (
     <img
       src={`${base}${src}`}
       alt={alt ?? ""}
@@ -42,13 +42,13 @@ export default function NameBadge({
   max = 160
 }: Props) {
   return (
-    <div className="flex items-center gap-4 sm:gap-6 flex-nowrap min-w-0">
+     <div className="flex items-center gap-3 sm:gap-6 flex-nowrap min-w-0 [container-type:inline-size]">
       <CircleImg src={left} alt={name} min={min} max={max} />
 
       {/* Center stack: wraps, centers, and never shoves the right badge to a new line */}
-      <div className="flex-1 min-w-0 px-2 text-center [container-type:inline-size]">
+     <div className="flex-1 min-w-0 px-2 text-center overflow-hidden [container-type:inline-size]">
         <div
-  className="font-extrabold leading-tight whitespace-nowrap"
+  className="font-extrabold leading-tight whitespace-nowrap truncate"
   style={{ fontSize: "clamp(0.9rem, 8cqi, 2.25rem)" }} // container-based scaling
 >
   {name.replaceAll("De La Paz", "De\u00A0La\u00A0Paz")}
@@ -64,6 +64,10 @@ export default function NameBadge({
       </div>
 
       <CircleImg src={right} alt="" min={min} max={max} />
+	  {/* Hide the right logo on very narrow widths to prevent overlap */}
+      <div className="max-[520px]:hidden">
+        <CircleImg src={right} alt="" min={min} max={max} />
+      </div>
     </div>
   );
 }
